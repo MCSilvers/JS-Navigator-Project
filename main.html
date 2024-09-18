@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="Navigator" content="width=device-width, initial-scale=1.0">
+        <title>Navigator</title>
+        <link rel="stylesheet" href="main.css"> 
+    </head>
+    <body>
+        <div id="app-container">
+            <div id="clock-widget">
+                <div id="clock"></div>
+            </div>
+            <div id="calendar-widget">
+                <h2>Upcoming Events</h2>
+                <ul id="events"></ul>
+            </div>
+            <div id="qr-container">
+                <img src="enter photo" alt="QR Code"> <!-- this is where you input the qr code-->
+              </div>
+        </div>
+      
+        <script>
+            function updateTime() {
+                const clock = document.getElementById('clock');
+                const now = new Date();
+                const timeString = now.toLocaleTimeString();
+                clock.innerText = timeString;
+                clock.style;
+            }
+
+            setInterval(updateTime, 1000);
+            updateTime();
+        </script>
+
+
+        <script src="calendar.js"></script> 
+    </body>
+</html>
