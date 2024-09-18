@@ -2,7 +2,7 @@ const ical = require('ical');
 const https = require('https');
 
 // Replace with the actual URL of your .ics file
-const icsUrl = 'https://outlook.office365.com/owa/calendar/1dd1acc9d7984d849bb307a590d71815@tva.gov/c32b555949a544c68eca92b9ccb3214115895975242393471215/calendar.ics';
+const icsUrl = '';
 
 function fetchCalendar() {
   https.get(icsUrl, (res) => {

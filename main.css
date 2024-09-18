@@ -103,3 +103,23 @@
     max-width: 50%; /* Adjust size of the QR code */
     max-height: 50%;
   }
+  #info-container {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    transform: translateY(-50%);
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    z-index: 1;
+    
+  }
+
+  #info-container img {
+    max-width: 150px; /* Adjust size of the infographic */
+    margin-right: 20px; /* Space between image and text */
+  }
+
+  #info-container div {
+    max-width: 300px; /* Adjust text area width */
+  }
