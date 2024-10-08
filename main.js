@@ -6,7 +6,8 @@ let mainWindow;
 function createWindow() {
     mainWindow = new BrowserWindow({
         width: 1024,
-        height: 600, 
+        height: 600,
+        fullscreen: true, 
         webPreferences:{
             preload: path.join(__dirname, 'preload.js'),
             nodeIntegration: true,
