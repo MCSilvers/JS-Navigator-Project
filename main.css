@@ -1,125 +1,81 @@
 :root {
-    --color-text: #999;
-    --color-text-dimmed: #666;
-    --color-text-bright: #fff;
-    --color-background: #000;
-    --font-primary: "Roboto Condensed";
-    --font-secondary: "Roboto";
-    --font-size: 20px;
-    --font-size-xsmall: 0.75rem;
-    --font-size-small: 1rem;
-    --font-size-medium: 1.5rem;
-    --font-size-large: 3.25rem;
-    --font-size-xlarge: 3.75rem;
-    --gap-body-top: 60px;
-    --gap-body-right: 60px;
-    --gap-body-bottom: 60px;
-    --gap-body-left: 60px;
-    --gap-modules: 30px;
-  }
-
-  html {
-    cursor: none;
-    overflow: hidden;
-    background: var(--color-background);
-    user-select: none;
-    font-size: var(--font-size);
-  }
-  
-  ::-webkit-scrollbar {
-    display: none;
-  }
-  
-  body {
-    margin: var(--gap-body-top) var(--gap-body-right) var(--gap-body-bottom) var(--gap-body-left);
-    position: absolute;
-    height: calc(100% - var(--gap-body-top) - var(--gap-body-bottom));
-    width: calc(100% - var(--gap-body-right) - var(--gap-body-left));
-    background: var(--color-background);
-    color: var(--color-text);
-    font-family: var(--font-primary), sans-serif;
-    font-weight: 400;
-    line-height: 1.5;
-    -webkit-font-smoothing: antialiased;
-  }
-  #app-container {
-    width: 100%;
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-    position: relative;
-
-  }
-
-  #clock-widget{
-    position: absolute;
-    top: 20px;
-    left: 50%;
-    transform: translateX(-50%);
-  }
-  
-#clock {
-    font-size: 48px;
+  --color-text: #fff;
+  --color-text-dimmed: #999;
+  --color-text-bright: #fff;
+  --color-background: #000;
+  --font-primary: "Arial";
+  --font-secondary: "Arial";
+  --font-size-small: 1.25rem;
+  --font-size-medium: 2.25rem;
+  --font-size-large: 3.25rem;
+  --font-size-xlarge: 3.75rem;
 }
-
+/* Fullscreen Background */
+html, body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100vh;
+  background: url('MK2.png') no-repeat center center;
+  background-size: cover;
+  color: var(--color-text);
+  font-family: var(--font-primary);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+/* Main Container */
+#app-container {
+  width: 100%;
+  height: 100%;
+  position: relative;
+}
+/* Desk Number (Top Left) */
+#desk-number {
+  position: absolute;
+  top: 80px;
+  right: 60px;
+  font-size: var(--font-size-medium);
+  font-weight: bold;
+}
+/* Clock (Top Right) */
+#clock-widget {
+  position: absolute;
+  top: 20px;
+  right: 60px;
+  font-size: var(--font-size-xlarge);
+  font-weight: bold;
+}
+/* Upcoming Events (Left Side) */
 #calendar-widget {
-    position: absolute;
-    top: 20px;
-    left: 650px;
-    width: 300px;
-    max-width: 100%;
-    padding: 0px;
-    box-sizing: border-box;
-    border-radius: 0px;
-
+  position: absolute;
+  top: -7px;
+  left: 23px;
+  max-width: 400px;
 }
-
-#calendar h2 {
-    margin: 0;
-    text-align: center;
-    font-size: 48px;
+#calendar-widget h2 {
+  font-size: var(--font-size-large);
+  text-transform: uppercase;
+  
+  padding-bottom: 0px;
 }
-
 #events {
-    list-style-type: none;
-    padding: 0;
-    text-align: left;
+  list-style-type: none;
+  padding: 0;
+  margin-top: -20px;
+  font-size: var(--font-size-small);
 }
-
 #events li {
-    margin: 10px 0;
-    font-size: 18px;
+  margin-bottom: 5px;
 }
-
-/* Style the QR code image */
+/* QR Code (Right Side) */
 #qr-container {
-    display: flex;
-    justify-content: center; /* Center horizontally */
-    align-items: center; /* Center vertically */
-    height: 100vh; /* Full viewport height */
-  }
-
-  #qr-container img {
-    max-width: 50%; /* Adjust size of the QR code */
-    max-height: 50%;
-  }
-  #info-container {
-    position: absolute;
-    top: 50%;
-    left: 0;
-    transform: translateY(-50%);
-    padding: 20px;
-    display: flex;
-    align-items: center;
-    z-index: 1;
-    
-  }
-
-  #info-container img {
-    max-width: 150px; /* Adjust size of the infographic */
-    margin-right: 20px; /* Space between image and text */
-  }
-
-  #info-container div {
-    max-width: 300px; /* Adjust text area width */
-  }
+  position: absolute;
+  top: 50%;
+  right: 100px;
+  transform: translateY(-50%);
+}
+#qr-container img {
+  width: 200px;
+  height: 200px;
+}

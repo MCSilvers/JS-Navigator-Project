@@ -1,44 +1,43 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="Navigator" content="width=device-width, initial-scale=1.0">
-        <title>Navigator</title>
-        <link rel="stylesheet" href="main.css"> 
-    </head>
-    <body>
-        <div id="app-container">
-            <div id="clock-widget">
-                <div id="clock"></div>
-            </div>
-            <div id="calendar-widget">
-                <h2>Upcoming Events</h2>
-                <ul id="events"></ul>
-            </div>
-            <div id="qr-container">
-                <img src="enter photo here" alt="QR Code"> <!-- this is where you input the qr code-->
-              </div>
-              <div id="info-container">
-                <img src="Infographic.svg" alt="Information">
-                
-              </div>
-            
-        </div>
-      
-        <script>
-            function updateTime() {
-                const clock = document.getElementById('clock');
-                const now = new Date();
-                const timeString = now.toLocaleTimeString();
-                clock.innerText = timeString;
-                clock.style;
-            }
-
-            setInterval(updateTime, 1000);
-            updateTime();
-        </script>
-
-
-        <script src="calendar.js"></script> 
-    </body>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Navigator</title>
+<link rel="stylesheet" href="main.css">
+</head>
+<body>
+<div id="app-container">
+<!-- Desk Number Display -->
+<div id="desk-number">MP2S121</div>
+<!-- Clock Widget -->
+<div id="clock-widget">
+<div id="clock"></div>
+</div>
+<!-- Upcoming Events Section (Now on the Left) -->
+<div id="calendar-widget">
+<h2>Schedule</h2>
+<ul id="events"></ul>
+</div>
+<!-- QR Code on the Right -->
+<div id="qr-container">
+<img src="Desk344.png" alt="QR Code">
+</div>
+</div>
+<script>
+       function updateTime() {
+           const clock = document.getElementById('clock');
+           const now = new Date();
+           const timeString = now.toLocaleTimeString([], {
+               hour: '2-digit',
+               minute: '2-digit',
+               hour12: true
+           });
+           clock.innerText = timeString;
+       }
+       setInterval(updateTime, 60000); // Update every minute
+       updateTime(); // Initial call
+</script>
+<script src="calendar.js"></script>
+</body>
 </html>

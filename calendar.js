@@ -1,11 +1,51 @@
 const ical = require('ical');
 const https = require('https');
+const fs = require('fs');
+const path = require('path');
 
-// Replace with the actual URL of your .ics file
-const icsUrl = '';
+// Resolve the path to the URL config file
+const icsUrlPath = path.join(__dirname, 'icsurl.txt');
+
+let icsUrl;
+
+try {
+  icsUrl = fs.readFileSync(icsUrlPath, 'utf-8').trim();
+  console.log(`[CONFIG] 📂 Loaded ICS URL from calendar_url.txt: ${icsUrl}`);
+} catch (err) {
+  console.error(`❌ Failed to read ICS URL from file: ${err.message}`);
+  icsUrl = ''; // fallback or force a failure
+}
+
+
+const eventsList = document.getElementById('events');
+
+// Optional: log to a local file
+function appendLog(line) {
+  const timestamp = new Date().toISOString();
+  const fullLine = `[${timestamp}] ${line}\n`;
+  fs.appendFile('calendar.log', fullLine, err => {
+    if (err) console.error('Failed to write log:', err);
+  });
+}
+
+// Log to both console and file
+function log(message) {
+  console.log(message);
+  appendLog(message);
+}
 
 function fetchCalendar() {
-  https.get(icsUrl, (res) => {
+  log(`🔄 Attempting to fetch calendar from ${icsUrl}`);
+  https.get(icsUrl, {
+  headers: {
+    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)',
+    'Accept': 'text/calendar, text/plain, */*',
+    'Connection': 'keep-alive'
+  }
+}, (res) => {
+    log(`🌐 HTTP Status: ${res.statusCode}`);
+    log(`📎 Headers: ${JSON.stringify(res.headers)}`);
+
     let data = '';
 
     res.on('data', (chunk) => {
@@ -13,13 +53,26 @@ function fetchCalendar() {
     });
 
     res.on('end', () => {
-      const events = ical.parseICS(data);
-      const upcomingEvents = getUpcomingEvents(events);
+      log(`📦 Received ${data.length} bytes of .ics data`);
+      try {
+        const events = ical.parseICS(data);
+        const parsedCount = Object.keys(events).length;
+        log(`📅 Parsed ${parsedCount} calendar items`);
 
-      displayEvents(upcomingEvents);
+        const upcoming = getUpcomingEvents(events);
+        log(`📌 Found ${upcoming.length} upcoming events`);
+        displayEvents(upcoming);
+      } catch (err) {
+        log(`❌ Error parsing calendar: ${err.message}`);
+        console.error(err);
+        eventsList.innerHTML = '<li>Error parsing calendar</li>';
+      }
     });
+
   }).on('error', (err) => {
-    console.error('Error fetching .ics file:', err);
+    log(`❌ Error fetching .ics file: ${err.message}`);
+    console.error(err);
+    eventsList.innerHTML = '<li>Error fetching calendar data</li>';
   });
 }
 
@@ -29,54 +82,48 @@ function getUpcomingEvents(events) {
 
   for (let eventId in events) {
     const event = events[eventId];
-
-    if (event.type === 'VEVENT' && event.start > now && event.summary == 'Busy') {
+    if (event.type === 'VEVENT' && event.start instanceof Date && event.start > now) {
       upcoming.push({
         summary: event.summary,
         start: event.start,
         end: event.end,
       });
     }
-   
   }
 
-  // Sort events by start date
   upcoming.sort((a, b) => a.start - b.start);
-
-  // Return the first 3 upcoming events
   return upcoming.slice(0, 3);
-
 }
 
 function displayEvents(events) {
-  const eventsList = document.getElementById('events');
-  eventsList.innerHTML = ''; // Clear the previous events
+  eventsList.innerHTML = '';
+
+  if (events.length === 0) {
+    const li = document.createElement('li');
+    li.textContent = 'No upcoming events.';
+    eventsList.appendChild(li);
+    return;
+  }
 
   events.forEach(event => {
+    const eventDate = new Date(event.start).toLocaleDateString([], {
+      month: 'numeric',
+      day: 'numeric'
+    });
+
+    const eventTime = new Date(event.start).toLocaleTimeString([], {
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: true
+    });
+    const eventEnd = new Date (event.end).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true, });
+
     const listItem = document.createElement('li');
-    const eventDate = new Date(event.start).toLocaleDateString();
-    const eventTime = new Date(event.start).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-    const eventEnd = new Date (event.end).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-    listItem.textContent = `${event.summary} at ${eventTime} until ${eventEnd}`;
+    listItem.textContent = `${eventDate} - ${event.summary} at ${eventTime}  until ${eventEnd}`;
     eventsList.appendChild(listItem);
   });
 }
 
-
-/*troubleshooting
-function printEventsToTerminal(eventsList){
-    console.log(eventsList);
-    eventList.forEach(event => {
-        const eventDate = new Date(event.start).toLocaleDateString();
-        const eventTime = new Date(event.start).toLocaleTimeString();
-    
-        // Print to terminal
-        console.log(`${eventDate} - ${event.summary} at ${eventTime} until ${eventEnd}`);
-      });
-}
-*/
-
-
-// Fetch the calendar when the app starts and refresh every 5 minutes
+// Initial fetch + refresh every 5 minutes
 fetchCalendar();
-setInterval(fetchCalendar, 5 * 60 * 1000); // 5 minutes
+setInterval(fetchCalendar, 5 * 60 * 1000);
