@@ -2,12 +2,14 @@ const ical = require('ical');
 const https = require('https');
 const fs = require('fs');
 const os = require('os');
-
+const path = require('path');
 // DOM target
 const eventsList = document.getElementById('events');
 
 // Log file path
-const logFile = 'calendar.log';
+
+const logFile = path.join(__dirname, 'calendar.log');
+
 
 // Helper: append to log file
 function appendLog(line) {
