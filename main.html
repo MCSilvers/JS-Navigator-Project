@@ -1,43 +1,115 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Navigator</title>
-<link rel="stylesheet" href="main.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Navigator</title>
+  <link rel="stylesheet" href="main.css">
 </head>
 <body>
-<div id="app-container">
-<!-- Desk Number Display -->
-<div id="desk-number">MP2S121</div>
-<!-- Clock Widget -->
-<div id="clock-widget">
-<div id="clock"></div>
-</div>
-<!-- Upcoming Events Section (Now on the Left) -->
-<div id="calendar-widget">
-<h2>Schedule</h2>
-<ul id="events"></ul>
-</div>
-<!-- QR Code on the Right -->
-<div id="qr-container">
-<img src="Desk344.png" alt="QR Code">
-</div>
-</div>
-<script>
-       function updateTime() {
-           const clock = document.getElementById('clock');
-           const now = new Date();
-           const timeString = now.toLocaleTimeString([], {
-               hour: '2-digit',
-               minute: '2-digit',
-               hour12: true
-           });
-           clock.innerText = timeString;
-       }
-       setInterval(updateTime, 60000); // Update every minute
-       updateTime(); // Initial call
-</script>
-<script src="calendar.js"></script>
+  <div id="app-container">
+    
+    <!-- Desk Number Display -->
+    <div id="desk-number">Loading Desk...</div>
+
+    <!-- Clock Widget -->
+    <div id="clock-widget">
+      <div id="clock"></div>
+    </div>
+
+    <!-- Upcoming Events Section (Now on the Left) -->
+    <div id="calendar-widget">
+      <h2>Schedule</h2>
+      <ul id="events"></ul>
+    </div>
+
+    <!-- QR Code on the Right -->
+    <div id="qr-container">
+      <img src="default.png" alt="QR Code">
+    </div>
+
+  </div>
+
+  <!-- Clock Script -->
+  <script>
+    function updateTime() {
+      const now = new Date();
+      const options = {
+        hour: 'numeric',
+        minute: '2-digit',
+        hour12: true
+      };
+      const timeString = now.toLocaleTimeString([], options);
+      document.getElementById('clock').textContent = timeString;
+    }
+
+    setInterval(updateTime, 1000);
+    updateTime();
+  </script>
+
+  <!-- Dynamic QR and Desk Number Script -->
+  <script>
+    const os = require('os');
+
+    window.addEventListener('DOMContentLoaded', () => {
+      const hostname = os.hostname();
+      const config = {
+        'gulchnav-20': { img: '634.png', desk: 'LPE2S634' },
+        'gulchnav-21': { img: '738.png', desk: 'LPE2S738' },
+        'gulchnav-22': { img: '739.png', desk: 'LPE2S739' }, 
+        'gulchnav-23': { img: '832.png', desk: 'LPE2S832' },
+        'gulchnav-24': { img: '833.png', desk: 'LPE2S833' },
+        'gulchnav-25': { img: '834.png', desk: 'LPE2S834' },
+        'gulchnav-26': { img: '926.png', desk: 'LPE2S926' },
+        'gulchnav-27': { img: '637.png', desk: 'LPE2S637' },
+        'gulchnav-28': { img: '743.png', desk: 'LPE2S743' },
+        'gulchnav-29': { img: '744.png', desk: 'LPE2S744' },
+        'gulchnav-30': { img: '836.png', desk: 'LPE2S836' },
+        'gulchnav-31': { img: '837.png', desk: 'LPE2S837' },
+        'gulchnav-32': { img: '838.png', desk: 'LPE2S838' },
+        'gulchnav-33': { img: '930.png', desk: 'LPE2S930' },
+        'gulchnav-34': { img: '641.png', desk: 'LPE2S641' },
+        'gulchnav-35': { img: '748.png', desk: 'LPE2S748' },
+        'gulchnav-36': { img: '749.png', desk: 'LPE2S749' },
+        'gulchnav-37': { img: '840.png', desk: 'LPE2S840' },
+        'gulchnav-38': { img: '841.png', desk: 'LPE2S841' },
+        'gulchnav-39': { img: '842.png', desk: 'LPE2S842' },
+        'gulchnav-40': { img: '934.png', desk: 'LPE2S934' },
+        'gulchnav-41': { img: '601.png', desk: 'LPE2S601' },
+        'gulchnav-42': { img: '605.png', desk: 'LPE2S605' },
+        'gulchnav-43': { img: '609.png', desk: 'LPE2S609' },
+        'gulchnav-44': { img: '615.png', desk: 'LPE2S615' },
+        'gulchnav-45': { img: '621.png', desk: 'LPE2S621' },
+        'gulchnav-46': { img: '627.png', desk: 'LPE2S627' },
+        'gulchnav-47': { img: '639.png', desk: 'LPE2S639' },
+        'gulchnav-48': { img: '912.png', desk: 'LPE2S912' },
+        'gulchnav-49': { img: '916.png', desk: 'LPE2S916' },
+        'gulchnav-50': { img: '920.png', desk: 'LPE2S920' },
+        'gulchnav-51': { img: '924.png', desk: 'LPE2S924' },
+        'gulchnav-52': { img: '932.png', desk: 'LPE2S932' },
+        'gulchnav-53': { img: '936.png', desk: 'LPE2S936' },
+        'gulchnav-54': { img: 'C13.png', desk: 'LPE2SC13' },
+        'gulchnav-55': { img: '902.png', desk: 'LPE2S902' },
+        'gulchnav-56': { img: '631.png', desk: 'LPE2S631' },
+        // Add hostnames and related images and desk numbers as needed
+      };
+
+      const target = config[hostname];
+
+      if (target) {
+        const qrImg = document.querySelector('#qr-container img');
+        const deskDisplay = document.getElementById('desk-number');
+        qrImg.src = target.img;
+        deskDisplay.textContent = target.desk;
+        console.log(`Host: ${hostname} → Using ${target.img}, Desk: ${target.desk}`);
+      } else {
+        console.warn(`No config found for hostname: ${hostname}`);
+        document.getElementById('desk-number').textContent = hostname;
+      }
+    });
+  </script>
+
+  <!-- Calendar logic loaded from calendar.js -->
+  <script src="calendar.js"></script>
 </body>
 </html>
