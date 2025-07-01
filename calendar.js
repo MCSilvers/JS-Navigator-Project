@@ -1,33 +1,26 @@
 const ical = require('ical');
 const https = require('https');
 const fs = require('fs');
-const os = require('os');
-const path = require('path');
-// DOM target
-const eventsList = document.getElementById('events');
+const hostname = window.getHostname();
 
-// Log file path
-
-const logFile = path.join(__dirname, 'calendar.log');
-
-
-// Helper: append to log file
+// Optional: log to a local file
 function appendLog(line) {
   const timestamp = new Date().toISOString();
   const fullLine = `[${timestamp}] ${line}\n`;
-  fs.appendFile(logFile, fullLine, err => {
-    if (err) console.error(' Failed to write to log:', err);
+  fs.appendFile('calendar.log', fullLine, err => {
+    if (err) console.error('Failed to write log:', err);
   });
 }
 
-// Helper: log to console and file
+// Log to both console and file
 function log(message) {
   console.log(message);
   appendLog(message);
 }
 
-// Determine ICS URL from hostname
-const hostname = os.hostname();
+// Log hostname early
+log(`🖥️ Hostname detected: ${hostname}`);
+
 const hostnameToUrlMap = {
   'gulchnav-20': 'https://outlook.office365.com/owa/calendar/ccbf098dfe694e7ab0043377bd46dce3@tvacloud.onmicrosoft.com/d00fbb675c6847199b163cef04309eda2645765481983974838/calendar.ics',
   'gulchnav-21': 'https://outlook.office365.com/owa/calendar/97e57fb22ee34d138625c400be42ab4f@tvacloud.onmicrosoft.com/05e252e24c10443bb3e9183467cff7fa13968498876892711110/calendar.ics',
@@ -66,103 +59,116 @@ const hostnameToUrlMap = {
   'gulchnav-54': 'https://outlook.office365.com/owa/calendar/b4b0bcfc4cb14c68a77968a674b4a34a@tvacloud.onmicrosoft.com/673d6577bb844c31bed0bab2887c33354432174510172680962/calendar.ics',
   'gulchnav-55': 'https://outlook.office365.com/owa/calendar/64310cd671134f21abc48e13c130bd4e@tvacloud.onmicrosoft.com/99cf16044e324cf9be0df72ee9f3ae4c1458438354468526291/calendar.ics',
   'gulchnav-56': 'https://outlook.office365.com/owa/calendar/233457b409be480c82309103e6af9d77@tvacloud.onmicrosoft.com/07b703ba10e54b29b0d041334e295f418760000073796028359/calendar.ics',
-  // add hostnames and ICS files within this block when needed
+  'DESKTOP-9LHLAC9': 'https://outlook.office365.com/owa/calendar/db79159c9c6d4505b9351996cb37b94a@tvacloud.onmicrosoft.com/4810319fc66a4654bacf25c42de0c9624205656288542873123/calendar.ics',
 };
 
-
 const icsUrl = hostnameToUrlMap[hostname];
+
+const eventsList = document.getElementById('events');
+
+// Check and exit early if URL not found
 if (!icsUrl) {
-  const msg = ` No ICS URL configured for hostname: ${hostname}`;
-  log(msg);
-  eventsList.innerHTML = `<li>${msg}</li>`;
-  throw new Error(msg);
-}
-
-// Fetch the calendar from the URL
-function fetchCalendar() {
-  log(`Attempting to fetch calendar from ${icsUrl}`);
-  https.get(icsUrl, (res) => {
-    log(` HTTP Status: ${res.statusCode}`);
-    log(` Headers: ${JSON.stringify(res.headers)}`);
-
-    let data = '';
-    res.on('data', chunk => data += chunk);
-    res.on('end', () => {
-      log(` Received ${data.length} bytes of .ics data`);
-      try {
-        const events = ical.parseICS(data);
-        log(` Parsed ${Object.keys(events).length} calendar items`);
-
-        const upcoming = getUpcomingEvents(events);
-        log(` Found ${upcoming.length} upcoming events`);
-        displayEvents(upcoming);
-      } catch (err) {
-        log(` Error parsing calendar: ${err.message}`);
-        eventsList.innerHTML = '<li>Error parsing calendar</li>';
+  const errMsg = `No ICS URL mapped for hostname: ${hostname}`;
+  log(errMsg);
+  console.error(errMsg);
+  eventsList.innerHTML = '<li>No calendar URL configured for this device</li>';
+} else {
+  function fetchCalendar() {
+    log(`Attempting to fetch calendar from ${icsUrl}`);
+    https.get(icsUrl, {
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)',
+        'Accept': 'text/calendar, text/plain, */*',
+        'Connection': 'keep-alive'
       }
-    });
+    }, (res) => {
+      log(`HTTP Status: ${res.statusCode}`);
+      log(`Headers: ${JSON.stringify(res.headers)}`);
 
-  }).on('error', (err) => {
-    log(` Error fetching .ics file: ${err.message}`);
-    eventsList.innerHTML = '<li>Error fetching calendar data</li>';
-  });
-}
+      let data = '';
 
-// Extract upcoming events
-function getUpcomingEvents(events) {
-  const now = new Date();
-  let upcoming = [];
-
-  for (let eventId in events) {
-    const event = events[eventId];
-    if (
-      event.type === 'VEVENT' &&
-      event.start instanceof Date &&
-      event.start > now &&
-      event.summary.toLowerCase().includes('busy') // Only "Busy" events
-    ) {
-      upcoming.push({
-        summary: event.summary,
-        start: event.start,
-        end: event.end
+      res.on('data', (chunk) => {
+        data += chunk;
       });
+
+      res.on('end', () => {
+        log(`Received ${data.length} bytes of .ics data`);
+        try {
+          const events = ical.parseICS(data);
+          const parsedCount = Object.keys(events).length;
+          log(`Parsed ${parsedCount} calendar items`);
+
+          const upcoming = getUpcomingEvents(events);
+          log(`Found ${upcoming.length} upcoming events`);
+          displayEvents(upcoming);
+        } catch (err) {
+          log(`Error parsing calendar: ${err.message}`);
+          console.error(err);
+          eventsList.innerHTML = '<li>Error parsing calendar</li>';
+        }
+      });
+
+    }).on('error', (err) => {
+      log(`Error fetching .ics file: ${err.message}`);
+      console.error(err);
+      eventsList.innerHTML = '<li>Error fetching calendar data</li>';
+    });
+  }
+
+  function getUpcomingEvents(events) {
+    const now = new Date();
+    let upcoming = [];
+
+    for (let eventId in events) {
+      const event = events[eventId];
+      if (event.type === 'VEVENT' && event.start instanceof Date && event.start > now) {
+        upcoming.push({
+          summary: event.summary,
+          start: event.start,
+          end: event.end,
+        });
+      }
     }
+
+    upcoming.sort((a, b) => a.start - b.start);
+    return upcoming.slice(0, 3);
   }
 
-  // Sort and limit to first 3
-  upcoming.sort((a, b) => a.start - b.start);
-  return upcoming.slice(0, 3);
-}
+  function displayEvents(events) {
+    eventsList.innerHTML = '';
 
-// Display to DOM
-function displayEvents(events) {
-  eventsList.innerHTML = '';
+    if (events.length === 0) {
+      const li = document.createElement('li');
+      li.textContent = 'No upcoming events.';
+      eventsList.appendChild(li);
+      return;
+    }
 
-  if (events.length === 0) {
-    const li = document.createElement('li');
-    li.textContent = 'No upcoming events.';
-    eventsList.appendChild(li);
-    return;
+    events.forEach(event => {
+      const eventDate = new Date(event.start).toLocaleDateString([], {
+        month: 'numeric',
+        day: 'numeric'
+      });
+
+      const eventTime = new Date(event.start).toLocaleTimeString([], {
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: true
+      });
+
+      const eventEnd = new Date(event.end).toLocaleTimeString([], {
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: true
+      });
+
+      const listItem = document.createElement('li');
+      listItem.textContent = `${eventDate} - ${event.summary} at ${eventTime} until ${eventEnd}`;
+      eventsList.appendChild(listItem);
+    });
   }
 
-  events.forEach(event => {
-    const eventDate = new Date(event.start).toLocaleDateString([], {
-      month: 'numeric',
-      day: 'numeric'
-    });
-
-    const eventTime = new Date(event.start).toLocaleTimeString([], {
-      hour: '2-digit',
-      minute: '2-digit',
-      hour12: true
-    });
-
-    const listItem = document.createElement('li');
-    listItem.textContent = `${eventDate} - ${event.summary} at ${eventTime}`;
-    eventsList.appendChild(listItem);
-  });
+  // Initial fetch + refresh every 5 minutes
+  fetchCalendar();
+  setInterval(fetchCalendar, 5 * 60 * 1000);
 }
-
-// Start the calendar fetch cycle
-fetchCalendar();
-setInterval(fetchCalendar, 5 * 60 * 1000); // every 5 minutes

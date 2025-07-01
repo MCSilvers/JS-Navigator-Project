@@ -53,6 +53,7 @@
     "normalize-url": "^6.1.0",
     "object-keys": "^1.1.1",
     "once": "^1.4.0",
+    "os": "^0.1.2",
     "p-cancelable": "^2.1.1",
     "pend": "^1.2.0",
     "progress": "^2.0.3",
