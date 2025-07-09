@@ -60,6 +60,7 @@ const hostnameToUrlMap = {
   'gulchnav-55': 'https://outlook.office365.com/owa/calendar/64310cd671134f21abc48e13c130bd4e@tvacloud.onmicrosoft.com/99cf16044e324cf9be0df72ee9f3ae4c1458438354468526291/calendar.ics',
   'gulchnav-56': 'https://outlook.office365.com/owa/calendar/233457b409be480c82309103e6af9d77@tvacloud.onmicrosoft.com/07b703ba10e54b29b0d041334e295f418760000073796028359/calendar.ics',
   'DESKTOP-9LHLAC9': 'https://outlook.office365.com/owa/calendar/db79159c9c6d4505b9351996cb37b94a@tvacloud.onmicrosoft.com/4810319fc66a4654bacf25c42de0c9624205656288542873123/calendar.ics',
+  'gulchnav-60': 'https://outlook.office365.com/owa/calendar/1dd1acc9d7984d849bb307a590d71815@tva.gov/a94091d29fcb4d65b609ed942107ff479599609747763562470/calendar.ics',
 };
 
 const icsUrl = hostnameToUrlMap[hostname];
