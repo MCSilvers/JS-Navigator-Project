@@ -122,7 +122,7 @@ if (!icsUrl) {
 
     for (let eventId in events) {
       const event = events[eventId];
-      if (event.type === 'VEVENT' && event.start instanceof Date && event.start > now) {
+      if (event.type === 'VEVENT' && event.start instanceof Date && event.end > now) {
         upcoming.push({
           summary: event.summary,
           start: event.start,
