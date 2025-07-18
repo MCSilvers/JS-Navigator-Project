@@ -19,7 +19,7 @@ function log(message) {
 }
 
 // Log hostname early
-log(`🖥️ Hostname detected: ${hostname}`);
+log(`Hostname detected: ${hostname}`);
 
 const hostnameToUrlMap = {
   'gulchnav-20': 'https://outlook.office365.com/owa/calendar/ccbf098dfe694e7ab0043377bd46dce3@tvacloud.onmicrosoft.com/d00fbb675c6847199b163cef04309eda2645765481983974838/calendar.ics',
