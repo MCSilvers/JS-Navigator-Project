@@ -5,15 +5,13 @@ let mainWindow;
 
 function createWindow() {
     mainWindow = new BrowserWindow({
-        nodeIntegration: true,
-        contextIsolation: false,
         width: 1024,
         height: 600,
         fullscreen: true, 
         webPreferences:{
             preload: path.join(__dirname, 'preload.js'),
+            contextIsolation: false, 
             nodeIntegration: true,
-            contextIsolation: false,
         },
     });
 
